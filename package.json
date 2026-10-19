@@ -4,9 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon .",
-    "start:prod": "SET NODE_ENV=prod&& node .",
-    "start:dev": "SET NODE_ENV=dev&& nodemon ."
+    "build": "npm i",
+    "start": "node .",
+    "dev": "nodemon ."
+  },
+  "engines": {
+    "node": "24.15.0"
   },
   "keywords": [],
   "author": "",

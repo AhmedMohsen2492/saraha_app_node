@@ -4,10 +4,8 @@ import routerHandler from './utils/controllers-handler.utils.js';
 import { config } from 'dotenv';
 import path from 'path';
 
-config(
-    { path: path.resolve(`src/config/.${process.env.NODE_ENV}.env`) }
-); // Load environment variables from .env file
-
+config(); // Load environment variables from .env file
+// { path: path.resolve(`src/config/.${process.env.NODE_ENV}.env`) }
 async function bootstrap() {
     const app = express();
 
