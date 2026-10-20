@@ -34,9 +34,11 @@ export const signUpService = async (req, res) => {
     const encryptedPhone = await Encryption({ value: phone, secretKey: process.env.ENCRYPTION_SECRET });
 
     //send email for verification
-    const token = jwt.sign({ email }, process.env.JWT_SECRET, {
-        expiresIn: 900000 // 15 min
-    });
+    const token = jwt.sign({ email }, process.env.JWT_SECRET
+        , {
+            expiresIn: "1d" 
+        }
+    );
     const confirmEmailLink = `${req.protocol}://${req.headers.host}/auth/verify/${token}`;
     emitter.emit('sendEmail', {
         toEmail: email,

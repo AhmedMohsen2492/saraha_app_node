@@ -41,15 +41,23 @@ const userSchema = new mongoose.Schema({
         default: false,
     },
     otp: String,
-    otpExpireAt:Date,
-    role:{
-        type:String,
+    otpExpireAt: Date,
+    role: {
+        type: String,
         default: systemRoles.USER,
         enum: Object.values(systemRoles),
     }
 },
     {
         timestamps: true,
+        toJSON: {
+            transform: function (doc, ret) {
+                delete ret.password;
+                delete ret.isDeleted;
+                delete ret.__v;
+                return ret;
+            }
+        }
     });
 
 const User = mongoose.models.User || mongoose.model('User', userSchema);

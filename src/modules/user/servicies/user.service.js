@@ -9,7 +9,7 @@ import { verificationTemplate } from "../../../templates/verification.template.j
 export const profileService = async (req, res) => {
     const { _id } = req.loggedInUser;
 
-    const user = await User.findById(_id).select("-password -isDeleted -__v");
+    const user = await User.findById(_id);
     if (!user) {
         return res.status(404).json({ message: "User Not Found" });
     }
@@ -75,7 +75,7 @@ export const updateProfileService = async (req, res) => {
 }
 
 export const listUsersService = async (req, res) => {
-    const users = await User.find({}, ['-password', '-__v', '-isDeleted']);
+    const users = await User.find({});
     res.status(200).json({ message: "Users retrieved successfully", users: users });
 }
 
