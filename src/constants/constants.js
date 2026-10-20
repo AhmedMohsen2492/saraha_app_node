@@ -1,7 +1,6 @@
-
-    
+ 
 export const systemRoles = {
-    AMDIN: 'admin',
+    ADMIN: 'admin',
     USER: 'user',
     SUPER_ADMIN: 'super-admin',
 }

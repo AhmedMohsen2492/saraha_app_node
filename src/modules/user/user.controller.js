@@ -15,6 +15,6 @@ userController.use(errorHandler(authenticationMiddleware()));
 userController.get('/profile', errorHandler(userService.profileService));
 userController.patch('/update-password',validationMiddleware(updatePasswordSchema) ,errorHandler(userService.updatePasswordService));
 userController.put('/update-profile', validationMiddleware(updateProfileSchema), errorHandler(userService.updateProfileService));
-userController.get('/list', authorizationMiddleware([ADMIN]), errorHandler(userService.listUsersService));
+userController.get('/list', authorizationMiddleware([USER,ADMIN,SUPER_ADMIN]), errorHandler(userService.listUsersService));
 
 export default userController;
