@@ -17,7 +17,7 @@ export const sendEmailService = async ({ toEmail, subject, html, attachments = [
         });
 
         const info = await transporter.sendMail({
-            from: `"HoMoS" <${process.env.Email_USER}>`,
+            from: `"Saraha App" <${process.env.Email_USER}>`,
             to: toEmail,
             subject: subject,
             html: html,
@@ -34,13 +34,37 @@ export const sendEmailService = async ({ toEmail, subject, html, attachments = [
 
 export const emitter = new EventEmitter();
 
+// emitter.on("sendEmail", async (emailData) => {
+//     try {
+//         const info = await sendEmailService(emailData);
+//         console.log("Email sent successfully:", info.messageId);
+//     } catch (error) {
+//         console.error("Email sending failed:", {
+//             code: error.code,
+//             command: error.command,
+//             response: error.response,
+//             message: error.message,
+//         });
+//     }
+// });
+
 emitter.on('sendEmail', (...args) => {
-    const { toEmail, subject, html, attachments } = args[0]; 
-    sendEmailService({
-        toEmail,
-        subject,
-        html,
-        attachments
-    });
-    console.log("Email sent successfully");
+    try {
+        const { toEmail, subject, html, attachments } = args[0];
+        sendEmailService({
+            toEmail,
+            subject,
+            html,
+            attachments
+        });
+        console.log("Email sent successfully");
+    } catch (error) {
+        console.error("Email sending failed:", {
+            code: error.code,
+            command: error.command,
+            response: error.response,
+            message: error.message,
+            error: error, 
+        });
+    }
 })
