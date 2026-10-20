@@ -2,10 +2,12 @@ import { Router } from "express";
 import * as messageService from "./services/message.service.js";
 import { errorHandler } from "../../middlewares/errorHandler.middleware.js";
 import { authenticationMiddleware } from "../../middlewares/authentication.middleware.js";
+import { validationMiddleware } from "../../middlewares/validation.middleware.js";
+import { sendMessageSchema } from "../../validators/message.schema.js";
 
 const messageController = Router();
 
-messageController.post('/send', errorHandler(messageService.sendMessageService));
+messageController.post('/send', validationMiddleware(sendMessageSchema), errorHandler(messageService.sendMessageService));
 messageController.get('/list', errorHandler(messageService.getMessagesService));
 
 // required login 

@@ -4,6 +4,8 @@ import { authenticationMiddleware } from "../../middlewares/authentication.middl
 import { authorizationMiddleware } from "../../middlewares/authorization.middleware.js";
 import { systemRoles } from "../../constants/constants.js";
 import { errorHandler } from "../../middlewares/errorHandler.middleware.js";
+import { validationMiddleware } from "../../middlewares/validation.middleware.js";
+import { updatePasswordSchema, updateProfileSchema } from "../../validators/user.schema.js";
 
 const userController = Router();
 const { USER, ADMIN, SUPER_ADMIN } = systemRoles;
@@ -11,8 +13,8 @@ const { USER, ADMIN, SUPER_ADMIN } = systemRoles;
 userController.use(errorHandler(authenticationMiddleware()));
 
 userController.get('/profile', errorHandler(userService.profileService));
-userController.patch('/update-password', errorHandler(userService.updatePasswordService));
-userController.put('/update-profile', errorHandler(userService.updateProfileService));
+userController.patch('/update-password',validationMiddleware(updatePasswordSchema) ,errorHandler(userService.updatePasswordService));
+userController.put('/update-profile', validationMiddleware(updateProfileSchema), errorHandler(userService.updateProfileService));
 userController.get('/list', authorizationMiddleware([ADMIN]), errorHandler(userService.listUsersService));
 
 export default userController;

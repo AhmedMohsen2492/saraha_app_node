@@ -4,12 +4,12 @@ import User from "../../../db/models/user.model.js";
 import { Decryption, Encryption } from "../../../utils/encryption.utils.js";
 import jwt from 'jsonwebtoken';
 import { emitter } from "../../../services/sendEmail.service.js";
-import { htmlTemplate } from "../../auth/services/auth.service.js";
+import { verificationTemplate } from "../../../templates/verification.template.js";
 
 export const profileService = async (req, res) => {
     const { _id } = req.loggedInUser;
 
-    const user = await User.findById(_id);
+    const user = await User.findById(_id).select("-password -isDeleted -__v");
     if (!user) {
         return res.status(404).json({ message: "User Not Found" });
     }
@@ -17,18 +17,12 @@ export const profileService = async (req, res) => {
     const decryptedPhone = await Decryption({ cipher: user.phone, secretKey: process.env.ENCRYPTION_SECRET });
     user.phone = decryptedPhone;
     res.status(200).json({ message: 'User profile retrieved successfully', user: user });
-}
-    ;
+};
 
 export const updatePasswordService = async (req, res) => {
-
-    console.log({ loggedInUser: req.loggedInUser });
     const { _id } = req.loggedInUser;
     const { oldPassword, newPassword, confirmNewPassword } = req.body;
 
-    if (newPassword !== confirmNewPassword) {
-        return res.status(400).json({ message: "password do not match" });
-    }
     const user = await User.findById(_id);
     if (!user) {
         return res.status(404).json({ message: "User Not Found" });
@@ -43,16 +37,13 @@ export const updatePasswordService = async (req, res) => {
     user.password = hashedPassword;
     user.save();
 
-    //revoke token to login again 
-    await BlackListTokens.create(req.loggedInUser.token);
+    // revoke token to login again 
+    // await BlackListTokens.create(req.loggedInUser.token);
 
     return res.status(200).json({ message: 'Password Updaded Successfully' });
-
-
 }
 
 export const updateProfileService = async (req, res) => {
-
     const { _id } = req.loggedInUser;
     const { username, phone, email } = req.body;
     const user = await User.findById(_id);
@@ -64,7 +55,7 @@ export const updateProfileService = async (req, res) => {
     if (email) {
         const isEmailExist = await User.findOne({ email });
         if (isEmailExist) {
-            return res.status(4049).json({ message: "Email Already Exist" });
+            return res.status(409).json({ message: "Email Already Exist" });
         }
         //send email 
         const token = jwt.sign({ email }, process.env.JWT_SECRET, {
@@ -74,27 +65,17 @@ export const updateProfileService = async (req, res) => {
         emitter.emit('sendEmail', {
             toEmail: email,
             subject: "Email Verification",
-            html: htmlTemplate(confirmEmailLink),
+            html: verificationTemplate(confirmEmailLink),
         });
         user.email = email;
         user.isEmailVerified = false;
     }
     user.save();
     return res.status(200).json({ message: 'Update Profile Success' });
-
 }
 
 export const listUsersService = async (req, res) => {
-
-    const users = await User.find({}, ['-password', '-__v']);
-    res.status(200).json({ message: "Users retrieved successfully", data: users });
-
+    const users = await User.find({}, ['-password', '-__v', '-isDeleted']);
+    res.status(200).json({ message: "Users retrieved successfully", users: users });
 }
 
-// import userModel from "../../../db/models/user.model.js";
-// export const getAllUsersService = async (req, res) => {
-//
-//         const users = await userModel.find({}, { projection: { password: 0 } }).toArray();
-//         res.status(200).json({ message: "Users retrieved successfully", users: users });
-
-// }ذ
