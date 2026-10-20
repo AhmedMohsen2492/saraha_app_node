@@ -11,7 +11,7 @@ const routerHandler = (app) => {
     // 404 handler
     app.use((req, res) => {
         return res.status(404).json({
-            message: "WELCOME TO EL HOMOS APP"
+            message: "Route not found. Please check the URL and HTTP method."
         });
     });
 
